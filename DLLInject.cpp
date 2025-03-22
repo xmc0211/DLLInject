@@ -52,14 +52,14 @@ BOOL DLLInject(_In_ LPTSTR lpDLLPath, _In_opt_ DWORD dwPid) {
     if (!hProcess) return FALSE;
 
     // 在进程中分配内存
-    LPVOID pRemoteMemory = VirtualAllocEx(hProcess, NULL, _tcslen(lpDLLPath) + 1, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    LPVOID pRemoteMemory = VirtualAllocEx(hProcess, NULL, _tcslen(lpDLLPath) * sizeof(TCHAR) + 1, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
     if (!pRemoteMemory) {
         CloseHandle(hProcess);
         return FALSE;
     }
     
     // 写入DLL路径
-    BOOL success = WriteProcessMemory(hProcess, pRemoteMemory, lpDLLPath, _tcslen(lpDLLPath) + 1, NULL);
+    BOOL success = WriteProcessMemory(hProcess, pRemoteMemory, lpDLLPath, _tcslen(lpDLLPath) * sizeof(TCHAR) + 1, NULL);
     if (!success) {
         VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
         CloseHandle(hProcess);
